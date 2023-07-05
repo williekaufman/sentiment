@@ -1,6 +1,7 @@
 from settings import OPENAI_SECRET_KEY
 import openai
 import pprint
+import math
 
 def prompt(x):
     return f"""
@@ -23,7 +24,9 @@ def query(x, n = 100):
     for choice in response['choices']:
         try:
             answer = float(choice['message']['content'])
-            if answer in d:
+            if math.isnan(answer):
+                continue
+            elif answer in d:
                 d[answer] += 1
             else:
                 d[answer] = 1
