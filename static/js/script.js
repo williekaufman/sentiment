@@ -22,6 +22,8 @@ gameData = null;
 
 currentChart = null;
 
+randomizeLabelHeights = false;
+
 darkColors = [
     'darkblue',
     'darkorange',
@@ -157,6 +159,9 @@ async function handleKeyDown(e) {
     } else if (e.key === 'l') {
         e.preventDefault();
         toggleLine(currentChart);
+    } else if (e.key === 'r') {
+        randomizeLabelHeights = !randomizeLabelHeights;
+        refreshVerticalLines(currentChart);
     }
 }
 
@@ -194,32 +199,37 @@ function toggleLine(chart) {
 }
 
 function randomPercentage() {
+    console.log('x');
     return (Math.random() * 100).toString() + '%';
+}
+
+function makeLine(line) {
+    return {
+        type: 'line',
+        mode: 'vertical',
+        scaleID: 'x',
+        value: line['value'],
+        borderColor: line['color'],
+        borderWidth: 2,
+        borderDash: [5, 5],
+        label: {
+            position: randomizeLabelHeights ? randomPercentage() : line['position'],
+            backgroundColor: line['color'],
+            content: line['label'],
+            display: true,
+            color: 'white',
+        }
+    }
 }
 
 function drawVerticalLine(chart, x_value, y_value, color, label) {
     averageLines.push({ 'value': x_value, 'color': color , 'label': label, 'position': ((1 - y_value) * 100).toString() + '%'})
-    
-    function makeLine(line) {
-        console.log(line);
-        return {
-            type: 'line',
-            mode: 'vertical',
-            scaleID: 'x',
-            value: line['value'],
-            borderColor: line['color'],
-            borderWidth: 2,
-            borderDash: [5, 5],
-            label: {
-                position: line['position'],
-                backgroundColor: line['color'],
-                content: line['label'],
-                display: true,
-                color: 'white',
-            }
-        }
-    }
 
+    refreshVerticalLines(chart);
+}
+
+function refreshVerticalLines(chart) {
+    console.log('hi');
     chart.options.plugins = {
         annotation: {
             annotations: averageLines.map(makeLine)
@@ -228,8 +238,6 @@ function drawVerticalLine(chart, x_value, y_value, color, label) {
 
     chart.update();
 }
-
-
 
 function plot(data) {
     if (!chart) {
