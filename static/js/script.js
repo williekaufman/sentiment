@@ -44,7 +44,6 @@ lightColors = [
 ].reverse();
 
 
-// returns a shuffled copy of the array
 function shuffle(array) {
     array = [...array];
 
@@ -199,7 +198,6 @@ function toggleLine(chart) {
 }
 
 function randomPercentage() {
-    console.log('x');
     return (Math.random() * 100).toString() + '%';
 }
 
@@ -229,7 +227,6 @@ function drawVerticalLine(chart, x_value, y_value, color, label) {
 }
 
 function refreshVerticalLines(chart) {
-    console.log('hi');
     chart.options.plugins = {
         annotation: {
             annotations: averageLines.map(makeLine)
@@ -316,7 +313,16 @@ function plot(data) {
     mean = data['mean'];
 
     weight_on_floor = Math.ceil(mean) - mean;
-    y_value_at_mean = weight_on_floor * v[Math.floor(mean)]['y'] + (1 - weight_on_floor) * v[Math.ceil(mean)]['y'];
+    
+    function lookup(x) {
+        for (let i = 0; i < v.length; i++) {
+            if (v[i]['x'] == x) {
+                return v[i]['y'];
+            }
+        }
+    }
+    
+    y_value_at_mean = weight_on_floor * lookup(Math.floor(mean)) + (1 - weight_on_floor) * lookup(Math.ceil(mean));
     
     drawVerticalLine(currentChart, data['mean'], y_value_at_mean, c, data['word']);
 }
